@@ -501,6 +501,13 @@ a:hover { color: #163FB0; }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--action-primary); box-shadow: 0 0 0 2px rgba(41,87,197,0.1); }
 .form-group textarea { resize: vertical; min-height: 60px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+/* Repeatable editor rows (e.g. TPP members): two fields plus a remove button.
+   Without the explicit third track the button wrapped onto its own line. */
+.form-row.has-remove { grid-template-columns: 1fr 1fr auto; align-items: end; }
+.editor-row { margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(15,15,20,0.06); }
+.editor-row:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.btn-remove { width: 26px; padding: 0; justify-content: center; color: var(--n-400); margin-bottom: 0; }
+.btn-remove:hover { color: var(--danger); border-color: rgba(192,57,43,0.35); background: var(--up-soft); }
 </style>
 </head>
 <body data-page-node-id="ycH38c6Eq0EOplBSfw4WsP">
@@ -717,19 +724,21 @@ const fundQuarterly = [
 ];
 
 
-// Roadmap: capabilities intentionally NOT built in this demo. Surfaced via the
-// "planned" badges in nav / tabs and the consolidated /roadmap page.
+// Roadmap: capabilities deliberately NOT built in this demo.
+// Audience is the fund's finance and operations leads, so every entry is a
+// capability they would recognise — no engineering tasks. Scope is limited to
+// portfolio- and fund-level investment data and return measurement; investment
+// terms, the LP portal and pipeline / IC are owned by other systems (see the
+// out-of-scope note on the /roadmap page).
 const roadmapItems = [
-  {key:'engine',phase:'P1',layerZh:'计算层',layerEn:'Engine',moduleZh:'派生引擎与 XIRR',moduleEn:'Derivation engine & XIRR',descZh:'按 DATA_MODEL_v2 §2 实现全部派生公式（FIFO 成本配对、持仓、汇总、MoC），并用 XIRR 计算 Gross / Realised / Unrealised IRR，替换当前写死的汇总值。',descEn:'Implement every derivation formula in DATA_MODEL_v2 §2 (FIFO cost matching, positions, roll-ups, MoC) plus XIRR for gross / realised / unrealised IRR, replacing the hardcoded summary values.',needZh:'无需新数据，现有投资事件即可支撑',needEn:'No new data — existing investment events suffice'},
-  {key:'lp',phase:'P1',layerZh:'数据层',layerEn:'Data',moduleZh:'LP 与认缴台账',moduleEn:'LP & commitments',descZh:'LP 名册、单 LP 认缴额与实缴进度、Capital Account 按 LP 分摊、Call / Distribution 通知函生成。',descEn:'LP register, per-LP commitment and paid-in progress, capital accounts allocated by LP, and call / distribution notice generation.',needZh:'需新增 LP 主体与认缴数据（Excel 无）',needEn:'Requires new LP entity & commitment data (absent from Excel)'},
-  {key:'terms',phase:'P1',layerZh:'数据层',layerEn:'Data',moduleZh:'投资条款',moduleEn:'Investment terms',descZh:'优先清算权、反稀释、领售 / 跟售、Pro-rata、董事席位与否决权条款；退出时作为 Waterfall 的计算输入。',descEn:'Liquidation preference, anti-dilution, drag / tag along, pro-rata, board seat and veto rights — feeding the exit waterfall.',needZh:'需从投资协议逐项录入（Excel 无）',needEn:'Must be captured from investment agreements (absent from Excel)'},
-  {key:'waterfall',phase:'P2',layerZh:'计算层',layerEn:'Engine',moduleZh:'费用与 Carry / Waterfall',moduleEn:'Fees, carry & waterfall',descZh:'管理费计提、Carry 归属、Hurdle 与 GP catch-up、LP / GP 分配瀑布，输出 Gross 到 Net 的业绩桥。',descEn:'Management fee accrual, carry attribution, hurdle and GP catch-up, LP / GP distribution waterfall, and the gross-to-net performance bridge.',needZh:'依赖 LP 认缴与投资条款先落地',needEn:'Depends on LP commitments and investment terms'},
-  {key:'pipeline',phase:'P2',layerZh:'视角层',layerEn:'Views',moduleZh:'Pipeline 与 IC 决策',moduleEn:'Pipeline & IC',descZh:'投前项目库、尽调进度看板、IC 会议与投决记录；打通"投前 → 已投"的完整链路，当前系统只从已投开始。',descEn:'Pre-deal pipeline, diligence progress board, IC meetings and decision records — connecting pre-deal to portfolio, which today starts only at "invested".',needZh:'需新增 Deal / 尽调数据对象',needEn:'Requires new deal & diligence objects'},
-  {key:'asof',phase:'P2',layerZh:'计算层',layerEn:'Engine',moduleZh:'季度关账与 as-of 回看',moduleEn:'Period close & as-of',descZh:'全局报告期选择、任意历史季度快照回看、估值桥（期初 NAV → 投入 → 退出 → 重估 → 期末 NAV）、估值定稿后锁定。',descEn:'Global reporting-period selector, as-of snapshots for any past quarter, valuation bridge (opening NAV → contributions → exits → remarks → closing NAV), and lock-on-approval.',needZh:'需补齐历史季度估值记录',needEn:'Requires a full history of quarterly valuation records'},
-  {key:'fx',phase:'P2',layerZh:'计算层',layerEn:'Engine',moduleZh:'多币种与历史汇率',moduleEn:'Multi-currency & historical FX',descZh:'交易日汇率随事件入库、报告日汇率独立维护、把本币收益与汇兑损益拆开。当前全局只有一个常量汇率，会污染跨年 MoC。',descEn:'Store the transaction-date FX rate on each event, maintain reporting-date rates separately, and split local-currency return from FX effect. Today a single constant rate distorts multi-year MoC.',needZh:'需接入汇率数据源',needEn:'Requires an FX rate data source'},
-  {key:'governance',phase:'P2',layerZh:'治理',layerEn:'Governance',moduleZh:'权限与复核',moduleEn:'Permissions & maker-checker',descZh:'角色权限矩阵、估值与退出数字的 maker-checker 双人复核、真实操作者身份（当前操作人写死在代码里）。',descEn:'Role permission matrix, maker-checker review on valuation and exit figures, and real operator identity (currently hardcoded).',needZh:'需接入账号体系',needEn:'Requires an account system'},
-  {key:'io',phase:'P3',layerZh:'治理',layerEn:'Governance',moduleZh:'持久化与 Excel 进出',moduleEn:'Persistence & Excel I/O',descZh:'后端持久化（当前刷新即丢）、按原子模板批量导入、导出保留 Excel 公式，对齐基金后台"Excel 进、Excel 出"的实际工作方式。',descEn:'Backend persistence (state is lost on reload today), bulk import from the atomic templates, and export with Excel formulas preserved — matching how fund back offices actually work.',needZh:'需后端服务',needEn:'Requires a backend service'}
+  {key:'perfdash',phase:'P1',layerZh:'仪表盘',layerEn:'Dashboard',moduleZh:'基金业绩仪表盘',moduleEn:'Fund performance dashboard',descZh:'基金层业绩趋势一屏看全：出资、分配与 NAV 随时间的走势曲线，DPI / RVPI / TVPI 变化，以及多支基金按 Vintage 的横向对比。目前只有季度明细表，看得到数字但看不出趋势。',descEn:'Fund-level performance on one screen: paid-in, distributions and NAV over time, the DPI / RVPI / TVPI trend, and a side-by-side comparison of funds by vintage. Today there is only a quarterly table — the numbers are there but the trend is not.',needZh:'现有季度数据即可支撑',needEn:'Supported by the existing quarterly data'},
+  {key:'portdash',phase:'P1',layerZh:'仪表盘',layerEn:'Dashboard',moduleZh:'组合监控仪表盘',moduleEn:'Portfolio monitoring dashboard',descZh:'组合暴露与集中度：行业、轮次、币种分布，前五大持仓占 NAV 比重，单项目集中度提醒，以及按估值环比变动排序的重点关注清单。',descEn:'Portfolio exposure and concentration: breakdown by sector, round and currency, the share of NAV held in the top five positions, single-position concentration alerts, and a watch list ranked by quarter-on-quarter valuation change.',needZh:'现有持仓与估值数据即可支撑',needEn:'Supported by the existing holdings and valuation data'},
+  {key:'close',phase:'P1',layerZh:'流程',layerEn:'Process',moduleZh:'季度估值与关账',moduleEn:'Quarterly valuation & close',descZh:'切换报告期查看任意历史季度的组合与基金状态；估值桥呈现期初 NAV → 新增投资 → 退出回收 → 重估 → 期末 NAV 的变动来源；季度定稿后锁定，不再被随手改动。',descEn:'Switch reporting period to view the portfolio and funds as at any past quarter; a valuation bridge showing opening NAV → new investments → exit proceeds → revaluation → closing NAV; and lock-down once a quarter is signed off.',needZh:'需补齐历史季度的估值记录',needEn:'Requires a full history of quarterly valuation records'},
+  {key:'netperf',phase:'P2',layerZh:'收益测算',layerEn:'Returns',moduleZh:'费用与 Carry 对业绩的影响',moduleEn:'Impact of fees and carry',descZh:'管理费与 Carry 的计提，以及从 Gross 到 Net 的业绩过渡 —— 同一支基金的 Gross MoC / IRR 如何逐层变成 Net，让对外沟通的口径有依据。',descEn:'Management fee and carry accrual, plus the walk from gross to net — how a fund\'s gross MoC / IRR becomes its net figure step by step, so external reporting rests on a documented basis.',needZh:'需确认各基金的费用与 Carry 条款',needEn:'Requires the fee and carry terms per fund'},
+  {key:'fxview',phase:'P2',layerZh:'收益测算',layerEn:'Returns',moduleZh:'多币种报告',moduleEn:'Multi-currency reporting',descZh:'按指定报告币种出具组合与基金报表，并把项目本币的经营收益与汇兑损益分开列示，避免汇率波动混进业绩判断。当前全系统使用单一固定汇率。',descEn:'Report the portfolio and funds in a chosen reporting currency, and separate local-currency return from FX effect so exchange-rate moves do not distort performance. Today a single fixed rate is used everywhere.',needZh:'需要一套历史汇率来源',needEn:'Requires a historical FX rate source'},
+  {key:'review',phase:'P2',layerZh:'流程',layerEn:'Process',moduleZh:'估值复核与变更留痕',moduleEn:'Valuation review & audit trail',descZh:'估值与退出数据由录入人与复核人分开确认，每次改动留下可追溯记录，并按角色区分可见范围与可编辑范围。目前所有人看到的都是同一份可直接编辑的数据。',descEn:'Valuation and exit figures confirmed by a preparer and a separate reviewer, every change leaving a traceable record, with visibility and edit rights differentiated by role. Today everyone sees the same directly editable data.',needZh:'需接入公司账号与角色',needEn:'Requires company accounts and roles'}
 ];
+
 
 
 const auditLogs = [{id:1,companyId:1,actionType:'update',actionLabel:'修改',tableName:'company_personnel',recordId:1,operator:'tinawsun',operatedAt:'2026-06-12 14:30:00',summary:'tinawsun 修改了委派人员信息',changes:[{field:'Personnel Name',from:'tinawsun',to:'tinawsun (updated)'},{field:'Role',from:'董事',to:'董事 (DL)'}]},{id:2,companyId:1,actionType:'create',actionLabel:'新增',tableName:'investment_events',recordId:12,operator:'p_kathylam',operatedAt:'2026-06-12 14:15:00',summary:'p_kathylam 新增了一条投资事件',changes:[{field:'Event Type',from:'—',to:'DIVIDEND'},{field:'Amount',from:'—',to:'$16,218.23'},{field:'Date',from:'—',to:'2026-02-13'}]},{id:3,companyId:1,actionType:'update',actionLabel:'修改',tableName:'financial_metrics',recordId:7,operator:'p_zihcheung',operatedAt:'2026-06-12 11:45:00',summary:'p_zihcheung 修改了 2026Q3 财务指标',changes:[{field:'Free Cash Flow',from:'-408,236,844.88',to:'-380,500,000.00'},{field:'Cash Runway (mth)',from:'20.74',to:'19.32'},{field:'Monthly Burn',from:'-136,078,948.29',to:'-126,833,333.33'}]},{id:4,companyId:1,actionType:'create',actionLabel:'新增',tableName:'funding_rounds',recordId:7,operator:'p_kathylam',operatedAt:'2026-06-12 10:20:00',summary:'p_kathylam 新增了一条融资轮次',changes:[{field:'Round',from:'—',to:'IPO'},{field:'Date',from:'—',to:'2026-04-01'},{field:'Valuation',from:'—',to:'$5,000,000,000'},{field:'Market',from:'—',to:'HKEx'}]},{id:5,companyId:1,actionType:'create',actionLabel:'新增',tableName:'cap_table',recordId:1,operator:'tinawsun',operatedAt:'2026-06-11 16:00:00',summary:'tinawsun 上传了 Cap Table 文档',changes:[{field:'As of Date',from:'—',to:'2025-11-12'},{field:'Event',from:'—',to:'Repurchase'},{field:'Total Shares',from:'—',to:'225,198,543'},{field:'TPP Ownership %',from:'—',to:'0.0836%'}]},{id:6,companyId:1,actionType:'update',actionLabel:'修改',tableName:'companies',recordId:1,operator:'tinawsun',operatedAt:'2026-06-11 15:30:00',summary:'tinawsun 修改了公司基本信息',changes:[{field:'Project Code',from:'Joy_old',to:'Joy'},{field:'Latest Round',from:'D',to:'E'},{field:'Subsector',from:'Tea Beverage',to:'Beverage Retail Chain'}]},{id:7,companyId:1,actionType:'approve',actionLabel:'同意新建',tableName:'valuation_records',recordId:2,operator:'ruihao',operatedAt:'2026-06-11 14:00:00',summary:'ruihao 审批通过了 TPP Fund II 的估值记录',changes:[{field:'Quarter',from:'—',to:'26Q1'},{field:'Current Cost',from:'—',to:'$6,424,214.73'},{field:'Current Net FMV',from:'—',to:'$6,424,214'},{field:'Valuation Method',from:'—',to:'Last round'}]},{id:8,companyId:1,actionType:'update',actionLabel:'修改',tableName:'financial_metrics',recordId:3,operator:'p_zihcheung',operatedAt:'2026-06-11 11:00:00',summary:'p_zihcheung 修改了 2026Q1 营业收入',changes:[{field:'Revenue',from:'728,250,159.21',to:'735,800,000.00'},{field:'YoY%',from:'-5.49%',to:'-4.85%'}]},{id:9,companyId:1,actionType:'approve',actionLabel:'同意新建',tableName:'investment_events',recordId:11,operator:'ruihao',operatedAt:'2026-06-10 17:00:00',summary:'ruihao 审批通过了回购退出事件',changes:[{field:'Event Type',from:'—',to:'EXIT_REPURCHASE'},{field:'Shares',from:'—',to:'753,015'},{field:'Proceeds',from:'—',to:'$25,696,857.00'}]},{id:10,companyId:1,actionType:'create',actionLabel:'新建',tableName:'board_meetings',recordId:2,operator:'p_xumyang',operatedAt:'2026-06-10 15:00:00',summary:'p_xumyang 新建了董事会会议记录',changes:[{field:'Meeting No',from:'—',to:'BM-2025-Q3'},{field:'Date',from:'—',to:'2025-09-20'},{field:'Attendees',from:'—',to:'tinawsun, p_kathylam, p_zihcheung'}]},{id:11,companyId:1,actionType:'update',actionLabel:'修改',tableName:'company_personnel',recordId:2,operator:'tinawsun',operatedAt:'2026-06-10 14:30:00',summary:'tinawsun 修改了委派人员状态',changes:[{field:'Personnel Name',from:'p_wang (已离任)',to:'p_kathylam'},{field:'Role',from:'董事',to:'财务'}]},{id:12,companyId:1,actionType:'create',actionLabel:'新建',tableName:'companies',recordId:1,operator:'tinawsun',operatedAt:'2026-06-10 10:00:00',summary:'tinawsun 创建了公司档案',changes:[{field:'Project Name',from:'—',to:'Heytea 喜茶'},{field:'Legal Name',from:'—',to:'Maxing Limited'},{field:'Structure',from:'—',to:'VIE'},{field:'Country',from:'—',to:'China'}]}];
@@ -1269,8 +1278,7 @@ function renderFundDetail(id) {
     { key: 'portfolio', label: t('ftab_portfolio'), count: m.holdingCount },
     { key: 'capital', label: t('ftab_capital'), count: callCount },
     { key: 'performance', label: t('ftab_performance'), count: fundQuarterly.filter(q => q.fundId === id).length },
-    { key: 'lp', label: t('ftab_lp'), planned: 'lp' },
-    { key: 'waterfall', label: t('ftab_waterfall'), planned: 'waterfall' }
+    { key: 'netperf', label: t('ftab_netperf'), planned: 'netperf' }
   ];
   const ccyBtn = (label, code) => `<button class="btn btn-sm ${displayCurrency === code ? 'btn-primary' : 'btn-default'}" onclick="setDisplayCurrency('${code}')">${label}</button>`;
 
@@ -1315,8 +1323,7 @@ function renderFundTab(tab, id) {
   if (tab === 'portfolio') return renderFundPortfolioTab(id);
   if (tab === 'capital') return renderFundCapitalTab(id);
   if (tab === 'performance') return renderFundPerformanceTab(id);
-  if (tab === 'lp') return renderPlannedPlaceholder('lp');
-  if (tab === 'waterfall') return renderPlannedPlaceholder('waterfall');
+  if (tab === 'netperf') return renderPlannedPlaceholder('netperf');
   return renderFundOverviewTab(id);
 }
 
@@ -1568,30 +1575,33 @@ function renderRoadmap() {
 <div class="page-header"><h1>${t('roadmap_title')}</h1></div>
 <div class="card" style="margin-bottom:var(--space-4)">
   <div class="card-header"><span class="card-title">${t('roadmap_scope_title')}</span></div>
-  <div style="font-size:13px;color:var(--n-700);line-height:1.7">${t('roadmap_scope_body')}</div>
+  <div style="font-size:13px;color:var(--n-600);line-height:1.8">${t('roadmap_scope_body')}</div>
 </div>
 <div class="card" style="margin-bottom:var(--space-4)">
-  <div style="font-size:13px;color:var(--n-600);line-height:1.7">${t('roadmap_intro')}</div>
-</div>
-<div class="card">
+  <div class="card-header"><span class="card-title">${t('roadmap_title')}</span></div>
+  <div style="font-size:13px;color:var(--n-500);line-height:1.8;margin-bottom:var(--space-5)">${t('roadmap_intro')}</div>
   <div class="table-wrap"><table class="data-table">
     <thead><tr>
-      <th style="width:60px">${t('roadmap_col_phase')}</th>
+      <th style="width:56px">${t('roadmap_col_phase')}</th>
       <th style="width:150px">${t('roadmap_col_module')}</th>
-      <th style="width:80px">${t('roadmap_col_layer')}</th>
+      <th style="width:72px">${t('roadmap_col_layer')}</th>
       <th>${t('roadmap_col_desc')}</th>
-      <th style="width:200px">${t('roadmap_col_need')}</th>
+      <th style="width:190px">${t('roadmap_col_need')}</th>
     </tr></thead>
     <tbody>
       ${rows.map(it => `<tr>
         <td><span class="tag ${it.phase === 'P1' ? 'tag-orange' : 'tag-default'}">${it.phase}</span></td>
         <td>${zh ? it.moduleZh : it.moduleEn}</td>
         <td><span class="tag">${zh ? it.layerZh : it.layerEn}</span></td>
-        <td style="white-space:normal;line-height:1.65;color:var(--n-700);font-weight:400">${zh ? it.descZh : it.descEn}</td>
-        <td style="white-space:normal;line-height:1.6;color:var(--n-500);font-weight:400">${zh ? it.needZh : it.needEn}</td>
+        <td style="white-space:normal;line-height:1.75;color:var(--n-600);font-weight:400">${zh ? it.descZh : it.descEn}</td>
+        <td style="white-space:normal;line-height:1.7;color:var(--n-400);font-weight:400">${zh ? it.needZh : it.needEn}</td>
       </tr>`).join('')}
     </tbody>
   </table></div>
+</div>
+<div class="card">
+  <div class="card-header"><span class="card-title">${t('roadmap_oos_title')}</span></div>
+  <div style="font-size:13px;color:var(--n-600);line-height:1.85">${t('roadmap_oos_body')}</div>
 </div>`;
 }
 
@@ -1742,7 +1752,6 @@ function renderCompanyDetail(id) {
     {key:'financials', label: t('tab_financials'), count: finCount},
     {key:'personnel', label: t('tab_personnel'), count: persCount},
     {key:'board', label: t('tab_board'), count: boardCount},
-    {key:'terms', label: t('tab_terms'), planned: 'terms'},
     {key:'log', label: t('tab_log'), count: logCount}
   ];
   
@@ -1939,7 +1948,6 @@ function renderCompanyTab(tab, companyId, fundFilter) {
   if (tab === 'financials') return renderFinancialsTab(companyId, null);
   if (tab === 'personnel') return renderPersonnelTab(companyId);
   if (tab === 'board') return renderBoardTab(companyId);
-  if (tab === 'terms') return renderPlannedPlaceholder('terms');
   if (tab === 'log') return renderLogTab(companyId);
   return '';
 }
@@ -3540,19 +3548,19 @@ function showEditPersonnelModal(companyId) {
       <input type="hidden" id="ep_companyId" value="${companyId}">
       <div id="ep_list">
         ${personnel.map((p, i) => `
-          <div class="form-row" style="align-items:end;margin-bottom:var(--space-3);padding-bottom:var(--space-3);border-bottom:1px solid var(--border-lightest)">
+          <div class="form-row has-remove editor-row">
             <input type="hidden" name="ep_id" value="${p.id}">
             <div class="form-group" style="margin-bottom:0"><label>${t('field_name')}</label><input name="ep_name" value="${p.personName}"></div>
             <div class="form-group" style="margin-bottom:0"><label>${t('field_role')}</label><input name="ep_role" value="${p.role}"></div>
-            <button class="btn btn-sm btn-default" onclick="this.closest('.form-row').remove()" style="color:var(--danger);margin-bottom:0;flex-shrink:0">✕</button>
+            <button class="btn btn-sm btn-default btn-remove" title="${t('remove')}" onclick="this.closest('.form-row').remove()">✕</button>
           </div>
         `).join('')}
       </div>
-      <button class="btn btn-sm btn-default" onclick="addPersonnelRow()" style="margin-top:var(--space-2)">+ Add Member</button>
+      <button class="btn btn-sm btn-default" onclick="addPersonnelRow()" style="margin-top:var(--space-4)">${icons.plus} ${t('add_member')}</button>
     </div>
     <div class="form-modal-footer">
-      <button class="btn btn-default" onclick="this.closest('.form-overlay').remove()">Cancel</button>
-      <button class="btn btn-primary" onclick="submitEditPersonnel()">Save</button>
+      <button class="btn btn-default" onclick="this.closest('.form-overlay').remove()">${t('cancel')}</button>
+      <button class="btn btn-primary" onclick="submitEditPersonnel()">${t('save')}</button>
     </div>
   </div>`;
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
@@ -3562,9 +3570,9 @@ function showEditPersonnelModal(companyId) {
 function addPersonnelRow() {
   const list = document.getElementById('ep_list');
   const row = document.createElement('div');
-  row.className = 'form-row';
-  row.style.cssText = 'align-items:end;margin-bottom:var(--space-3);padding-bottom:var(--space-3);border-bottom:1px solid var(--border-lightest)';
-  row.innerHTML = `<input type="hidden" name="ep_id" value="new"><div class="form-group" style="margin-bottom:0"><label>${t('field_name')}</label><input name="ep_name" value=""></div><div class="form-group" style="margin-bottom:0"><label>${t('field_role')}</label><input name="ep_role" value=""></div><button class="btn btn-sm btn-default" onclick="this.closest('.form-row').remove()" style="color:var(--danger);margin-bottom:0;flex-shrink:0">✕</button>`;
+  row.className = 'form-row has-remove editor-row';
+  row.style.cssText = '';
+  row.innerHTML = `<input type="hidden" name="ep_id" value="new"><div class="form-group" style="margin-bottom:0"><label>${t('field_name')}</label><input name="ep_name" value=""></div><div class="form-group" style="margin-bottom:0"><label>${t('field_role')}</label><input name="ep_role" value=""></div><button class="btn btn-sm btn-default btn-remove" title="${t('remove')}" onclick="this.closest('.form-row').remove()">✕</button>`;
   list.appendChild(row);
 }
 
