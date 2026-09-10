@@ -1,6 +1,6 @@
 # TPP 投资组合管理系统 — 公开 Demo
 
-在线预览：https://shanexzxz.github.io/tpp-demo/
+在线预览：**https://tpp-demo.pages.dev/**（备用：https://shanexzxz.github.io/tpp-demo/）
 
 私募股权投资组合管理系统的前端 Demo，覆盖：
 
