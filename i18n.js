@@ -473,6 +473,10 @@ const I18N = {
 
   // ---------------------- Roadmap / planned ----------------------
   nav_roadmap:              { zh: '后续规划',           en: 'Roadmap' },
+  nav_analytics:            { zh: '分析',               en: 'Analytics' },
+  adash_fund:               { zh: '基金业绩',           en: 'Fund performance' },
+  adash_portfolio:          { zh: '组合监控',           en: 'Portfolio monitoring' },
+  scope_all_funds:          { zh: '全部基金',           en: 'All funds' },
   planned:                  { zh: '规划中',             en: 'Planned' },
   planned_title:            { zh: '该模块尚未在本 Demo 中实现', en: 'Not built in this demo yet' },
   planned_view_roadmap:     { zh: '查看完整规划',       en: 'View full roadmap' },
@@ -484,7 +488,7 @@ const I18N = {
   roadmap_col_desc:         { zh: '规划内容',           en: 'Scope' },
   roadmap_col_need:         { zh: '前提条件',           en: 'Prerequisite' },
   roadmap_scope_title:      { zh: '本轮已覆盖',         en: 'Covered in this round' },
-  roadmap_scope_body:       { zh: '组合维度：11 家被投公司主档与 9 个详情页（投资与退出明细、现金流、融资与流动性、季度估值、Cap Table、财务指标、委派人员、董事会、操作日志）。基金维度：基金列表与详情，含认缴、已缴、未提取、已分配、NAV、DPI / RVPI / TVPI、IRR，以及出资与分配台账、季度业绩明细。全部数字为演示数据。', en: 'Portfolio level: 11 portfolio companies with nine detail views (investments and exits, cashflow, funding and liquidity, quarterly valuation, cap table, financials, secondees, board, audit log). Fund level: fund list and detail covering commitment, paid-in, dry powder, distributions, NAV, DPI / RVPI / TVPI and IRR, plus the call and distribution ledgers and the quarterly track record. All figures are demo data.' },
+  roadmap_scope_body:       { zh: '组合维度：11 家被投公司主档与 9 个详情页（投资与退出明细、现金流、融资与流动性、季度估值、Cap Table、财务指标、委派人员、董事会、操作日志）。基金维度：基金列表与详情，含认缴、已缴、未提取、已分配、NAV、DPI / RVPI / TVPI、IRR，以及出资与分配台账、季度业绩明细。<b>分析</b>：基金业绩仪表盘（J 曲线、倍数走势、Vintage 对比）与组合监控仪表盘（赛道 / 轮次 / 币种暴露、集中度提示、本季估值变动、回报倍数分档）。全部数字为演示数据。', en: 'Portfolio level: 11 portfolio companies with nine detail views (investments and exits, cashflow, funding and liquidity, quarterly valuation, cap table, financials, secondees, board, audit log). Fund level: fund list and detail covering commitment, paid-in, dry powder, distributions, NAV, DPI / RVPI / TVPI and IRR, plus the call and distribution ledgers and the quarterly track record. <b>Analytics</b>: a fund performance dashboard (J-curve, multiple progression, vintage comparison) and a portfolio monitoring dashboard (exposure by theme, round and currency, concentration alerts, value movement for the quarter, holdings by gross multiple). All figures are demo data.' },
   roadmap_oos_title:        { zh: '由其他系统承接',     en: 'Owned by other systems' },
   roadmap_oos_body:         { zh: '本系统只聚焦组合与基金维度的投资数据与收益测算。以下三块不在范围内：<b>投资条款</b>（优先清算权、反稀释、领售跟售等协议要点）；<b>LP Portal</b>（LP 名册与认缴、出资与分配通知、对 LP 的报告披露）；<b>Pipeline 与 IC</b>（投前项目库、尽调进度、投决记录）。', en: 'This system covers only portfolio- and fund-level investment data and return measurement. Three areas sit outside it: <b>investment terms</b> (liquidation preference, anti-dilution, drag and tag along and other agreement provisions); <b>the LP portal</b> (LP register and commitments, call and distribution notices, LP reporting); and <b>pipeline and IC</b> (pre-deal pipeline, diligence progress, investment decisions).' },
 };

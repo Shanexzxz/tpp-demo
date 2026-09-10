@@ -192,7 +192,11 @@ a:hover { color: #163FB0; }
 .data-table td.text-right { font-variant-numeric: tabular-nums; letter-spacing: -0.1px; }
 .data-table td .sub { color: var(--n-400); font-size: 11px; margin-left: 5px; }
 /* Table inside a card: pull flush to the card's text edges */
-.card > .table-wrap { margin: 0 calc(-1 * var(--space-6)) calc(-1 * var(--space-6)); }
+/* Pull a card's table flush to the card edges. The negative bottom margin is
+   only correct when the table really is the last thing in the card — otherwise
+   whatever follows (a caption, another section) gets dragged up on top of it. */
+.card > .table-wrap { margin: 0 calc(-1 * var(--space-6)); }
+.card > .table-wrap:last-child { margin-bottom: calc(-1 * var(--space-6)); }
 .card > .table-wrap .data-table thead th:first-child { padding-left: var(--space-6); border-top-left-radius: 0; }
 .card > .table-wrap .data-table thead th:last-child { padding-right: var(--space-6); border-top-right-radius: 0; }
 .card > .table-wrap .data-table td:first-child { padding-left: var(--space-6); }
@@ -330,6 +334,37 @@ a:hover { color: #163FB0; }
 /* ========== Two Column ========== */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+
+/* ========== Charts ========== */
+/* Charts sit beside the tables, never instead of them. Hairline rules, one
+   accent, no fills — the shape carries the message and the table carries the
+   figures. */
+.chart-grid { margin-top: var(--space-5); }
+.chart-block { padding: var(--space-4) 0 var(--space-2); }
+.chart-grid .chart-block { padding-right: var(--space-6); }
+.chart-grid .chart-block:last-child { padding-right: 0; }
+.chart-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); flex-wrap: wrap; }
+.chart-title { font-size: 13px; font-weight: 500; color: var(--n-900); }
+.chart-note { font-size: 11.5px; color: var(--n-400); margin-top: 3px; line-height: 1.6; max-width: 78ch; }
+.chart-legend { display: flex; gap: var(--space-4); align-items: center; flex-wrap: wrap; padding-top: 2px; }
+.chart-legend .cl-item { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--n-500); white-space: nowrap; }
+.chart-legend .cl-item i { width: 10px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+
+/* Share-of-total breakdown: a ranked bar list, readable as a table. */
+.bd-list { display: flex; flex-direction: column; }
+.bd-row { display: grid; grid-template-columns: minmax(84px, 1.4fr) minmax(50px, 1fr) auto 44px; align-items: center; gap: var(--space-3); padding: 7px 0; border-bottom: 1px solid rgba(15,15,20,0.045); }
+.bd-row:last-child { border-bottom: none; }
+.bd-name { font-size: 12.5px; color: var(--n-900); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bd-name a { color: var(--n-900); }
+.bd-name a:hover { color: var(--accent); }
+.bd-track { height: 5px; background: var(--n-100); border-radius: 2px; overflow: hidden; }
+.bd-track span { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+.bd-val { font-size: 12px; color: var(--n-600); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.bd-pct { font-size: 12px; color: var(--n-900); font-variant-numeric: tabular-nums; text-align: right; }
+
+/* A single quiet line for a threshold breach — not a coloured banner. */
+.alert-line { display: flex; align-items: baseline; gap: var(--space-3); margin: var(--space-4) 0 0; padding: 9px 12px; font-size: 12.5px; color: var(--n-700); background: var(--up-soft); border-left: 2px solid var(--up); border-radius: 0 3px 3px 0; line-height: 1.6; }
+.alert-line b { font-weight: 500; color: var(--up); white-space: nowrap; }
 
 /* ========== Section Groups (within a tab) ========== */
 .section-group { margin-bottom: var(--space-6); }
@@ -534,7 +569,7 @@ const companies = [
 // from fundCompanySummaries in getFundMetrics(), so the fund pages always tie to the
 // Portfolio and Overview pages. Commitment / called / distributed are fund-level facts
 // (LP-side), scaled to be consistent with the portfolio roll-up.
-const funds = [{id:1,fundName:'TPP Opportunity Fund I, L.P.',fundShortName:'TPP Fund I',fundType:'Opportunity',vintageYear:2019,totalCommitment:190000000,calledAmount:152000000,distributionAmount:77354310,grossIRR:0.183,netIRR:0.142,currency:'USD',managementFeePct:2.0,carryPct:20.0,hurdleRatePct:8.0,status:'投资期',lpCount:45,finalCloseDate:'2019-08-30',investmentPeriodEnd:'2024-08-30',termEnd:'2029-08-30'},{id:2,fundName:'TPP Fund II, L.P.',fundShortName:'TPP Fund II',fundType:'Main',vintageYear:2021,totalCommitment:300000000,calledAmount:215000000,distributionAmount:25937118,grossIRR:0.096,netIRR:0.061,currency:'USD',managementFeePct:2.0,carryPct:20.0,hurdleRatePct:8.0,status:'投资期',lpCount:68,finalCloseDate:'2021-05-20',investmentPeriodEnd:'2026-05-20',termEnd:'2031-05-20'}];
+const funds = [{id:1,fundName:'TPP Opportunity Fund I, L.P.',fundShortName:'TPP Fund I',fundType:'Opportunity',vintageYear:2019,totalCommitment:190000000,calledAmount:152000000,distributionAmount:77354310,grossIRR:0.183,netIRR:0.142,currency:'USD',managementFeePct:2.0,carryPct:20.0,hurdleRatePct:8.0,status:'投资期',lpCount:45,finalCloseDate:'2019-08-30',investmentPeriodEnd:'2024-08-30',termEnd:'2029-08-30'},{id:2,fundName:'TPP Fund II, L.P.',fundShortName:'TPP Fund II',fundType:'Main',vintageYear:2021,totalCommitment:300000000,calledAmount:215000000,distributionAmount:25937118.01,grossIRR:0.096,netIRR:0.061,currency:'USD',managementFeePct:2.0,carryPct:20.0,hurdleRatePct:8.0,status:'投资期',lpCount:68,finalCloseDate:'2021-05-20',investmentPeriodEnd:'2026-05-20',termEnd:'2031-05-20'}];
 
 
 
@@ -585,21 +620,21 @@ const valuationMethods = ['Last round','DCF','Comparable Companies','Precedent T
 const quarterOptions = ['26Q1','25Q4','25Q3','25Q2','25Q1','24Q4','24Q3','24Q2','24Q1'];
 
 const fundCompanySummaries = [
-  {id:1,companyId:1,fundId:1,entryRound:'C',asOf:'2026-03-31',totalInvested:12769473.43,realised:654309.80,unrealised:30284635,grossMoC:2.4229,grossIRR:0.1499,ownershipPct:0.008963},
-  {id:2,companyId:1,fundId:2,entryRound:'E',asOf:'2026-03-31',totalInvested:32121071.73,realised:25937118.01,unrealised:6424214,grossMoC:1.0075,grossIRR:0.0017,ownershipPct:0.000836},
-  {id:3,companyId:2,fundId:1,entryRound:'B',asOf:'2026-03-31',totalInvested:18000000,realised:0,unrealised:24500000,grossMoC:1.36,grossIRR:0.092,ownershipPct:0.0512},
-  {id:4,companyId:2,fundId:2,entryRound:'C',asOf:'2026-03-31',totalInvested:25000000,realised:0,unrealised:31000000,grossMoC:1.24,grossIRR:0.078,ownershipPct:0.0413},
-  {id:5,companyId:3,fundId:2,entryRound:'C',asOf:'2026-03-31',totalInvested:42000000,realised:0,unrealised:58000000,grossMoC:1.38,grossIRR:0.115,ownershipPct:0.0682},
-  {id:6,companyId:4,fundId:2,entryRound:'A',asOf:'2026-03-31',totalInvested:8000000,realised:0,unrealised:12500000,grossMoC:1.56,grossIRR:0.182,ownershipPct:0.0721},
-  {id:7,companyId:5,fundId:1,entryRound:'D',asOf:'2026-03-31',totalInvested:22000000,realised:9500000,unrealised:18000000,grossMoC:1.25,grossIRR:0.061,ownershipPct:0.0218},
-  {id:8,companyId:6,fundId:1,entryRound:'B',asOf:'2026-03-31',totalInvested:14000000,realised:0,unrealised:21500000,grossMoC:1.54,grossIRR:0.131,ownershipPct:0.0428},
-  {id:9,companyId:6,fundId:2,entryRound:'C',asOf:'2026-03-31',totalInvested:18000000,realised:0,unrealised:22000000,grossMoC:1.22,grossIRR:0.071,ownershipPct:0.0331},
-  {id:10,companyId:7,fundId:1,entryRound:'D',asOf:'2026-03-31',totalInvested:30000000,realised:5200000,unrealised:38000000,grossMoC:1.44,grossIRR:0.118,ownershipPct:0.0395},
-  {id:11,companyId:7,fundId:2,entryRound:'E',asOf:'2026-03-31',totalInvested:45000000,realised:0,unrealised:50000000,grossMoC:1.11,grossIRR:0.045,ownershipPct:0.0288},
-  {id:12,companyId:8,fundId:1,entryRound:'C',asOf:'2026-03-31',totalInvested:38000000,realised:62000000,unrealised:0,grossMoC:1.63,grossIRR:0.142,ownershipPct:0},
-  {id:13,companyId:9,fundId:2,entryRound:'A',asOf:'2026-03-31',totalInvested:5000000,realised:0,unrealised:5000000,grossMoC:1.00,grossIRR:0,ownershipPct:0.0612},
-  {id:14,companyId:10,fundId:2,entryRound:'B',asOf:'2026-03-31',totalInvested:12000000,realised:0,unrealised:11200000,grossMoC:0.93,grossIRR:-0.024,ownershipPct:0.0521},
-  {id:15,companyId:11,fundId:2,entryRound:'A',asOf:'2026-03-31',totalInvested:6500000,realised:0,unrealised:7800000,grossMoC:1.20,grossIRR:0.085,ownershipPct:0.0648}
+  {id:1,companyId:1,fundId:1,entryRound:'C',asOf:'2026-03-31',totalInvested:12769473.43,realised:654309.80,unrealised:30284635,priorNav:29200000,periodRealised:0,grossMoC:2.4229,grossIRR:0.1499,ownershipPct:0.008963},
+  {id:2,companyId:1,fundId:2,entryRound:'E',asOf:'2026-03-31',totalInvested:32121071.73,realised:25937118.01,unrealised:6424214,priorNav:16100000,periodRealised:9937118.01,grossMoC:1.0075,grossIRR:0.0017,ownershipPct:0.000836},
+  {id:3,companyId:2,fundId:1,entryRound:'B',asOf:'2026-03-31',totalInvested:18000000,realised:0,unrealised:24500000,priorNav:23600000,periodRealised:0,grossMoC:1.36,grossIRR:0.092,ownershipPct:0.0512},
+  {id:4,companyId:2,fundId:2,entryRound:'C',asOf:'2026-03-31',totalInvested:25000000,realised:0,unrealised:31000000,priorNav:29800000,periodRealised:0,grossMoC:1.24,grossIRR:0.078,ownershipPct:0.0413},
+  {id:5,companyId:3,fundId:2,entryRound:'C',asOf:'2026-03-31',totalInvested:42000000,realised:0,unrealised:58000000,priorNav:55400000,periodRealised:0,grossMoC:1.38,grossIRR:0.115,ownershipPct:0.0682},
+  {id:6,companyId:4,fundId:2,entryRound:'A',asOf:'2026-03-31',totalInvested:8000000,realised:0,unrealised:12500000,priorNav:11700000,periodRealised:0,grossMoC:1.56,grossIRR:0.182,ownershipPct:0.0721},
+  {id:7,companyId:5,fundId:1,entryRound:'D',asOf:'2026-03-31',totalInvested:22000000,realised:9500000,unrealised:18000000,priorNav:18700000,periodRealised:0,grossMoC:1.25,grossIRR:0.061,ownershipPct:0.0218},
+  {id:8,companyId:6,fundId:1,entryRound:'B',asOf:'2026-03-31',totalInvested:14000000,realised:0,unrealised:21500000,priorNav:20400000,periodRealised:0,grossMoC:1.54,grossIRR:0.131,ownershipPct:0.0428},
+  {id:9,companyId:6,fundId:2,entryRound:'C',asOf:'2026-03-31',totalInvested:18000000,realised:0,unrealised:22000000,priorNav:21300000,periodRealised:0,grossMoC:1.22,grossIRR:0.071,ownershipPct:0.0331},
+  {id:10,companyId:7,fundId:1,entryRound:'D',asOf:'2026-03-31',totalInvested:30000000,realised:5200000,unrealised:38000000,priorNav:36200000,periodRealised:0,grossMoC:1.44,grossIRR:0.118,ownershipPct:0.0395},
+  {id:11,companyId:7,fundId:2,entryRound:'E',asOf:'2026-03-31',totalInvested:45000000,realised:0,unrealised:50000000,priorNav:48600000,periodRealised:0,grossMoC:1.11,grossIRR:0.045,ownershipPct:0.0288},
+  {id:12,companyId:8,fundId:1,entryRound:'C',asOf:'2026-03-31',totalInvested:38000000,realised:62000000,unrealised:0,priorNav:15000000,periodRealised:15354310,grossMoC:1.63,grossIRR:0.142,ownershipPct:0},
+  {id:13,companyId:9,fundId:2,entryRound:'A',asOf:'2026-03-31',totalInvested:5000000,realised:0,unrealised:5000000,priorNav:5000000,periodRealised:0,grossMoC:1.00,grossIRR:0,ownershipPct:0.0612},
+  {id:14,companyId:10,fundId:2,entryRound:'B',asOf:'2026-03-31',totalInvested:12000000,realised:0,unrealised:11200000,priorNav:12400000,periodRealised:0,grossMoC:0.93,grossIRR:-0.024,ownershipPct:0.0521},
+  {id:15,companyId:11,fundId:2,entryRound:'A',asOf:'2026-03-31',totalInvested:6500000,realised:0,unrealised:7800000,priorNav:7400000,periodRealised:0,grossMoC:1.20,grossIRR:0.085,ownershipPct:0.0648}
 ];
 
 const unrealizedPositions = [{id:1,companyId:1,fundId:1,securitiesType:'Series C-1 pref',remainingShares:891795,remainingCost:5447562.15,fmv:13275837,netFmv:12493010},{id:2,companyId:1,fundId:1,securitiesType:'Series C-2 pref',remainingShares:1126603,remainingCost:7321911.28,fmv:17008798,netFmv:16040109},{id:3,companyId:1,fundId:2,securitiesType:'Series E pref',remainingShares:188254,remainingCost:6424214.73,fmv:6424214,netFmv:6424214}];
@@ -700,27 +735,67 @@ const capitalCalls = [
 
 // Distributions to LPs. Cumulative per fund ties to funds[].distributionAmount.
 const fundDistributions = [
-  {id:1,fundId:1,distNo:'DIST-2023-01',distDate:'2023-05-20',amount:24000000,currency:'USD',distType:'Return of capital',sourceCompany:'NorthStar 北极星',status:'已完成'},
-  {id:2,fundId:1,distNo:'DIST-2024-01',distDate:'2024-02-28',amount:20000000,currency:'USD',distType:'Realised gain',sourceCompany:'NorthStar 北极星',status:'已完成'},
-  {id:3,fundId:1,distNo:'DIST-2025-01',distDate:'2025-04-10',amount:18000000,currency:'USD',distType:'Return of capital',sourceCompany:'Helio 海立',status:'已完成'},
-  {id:4,fundId:1,distNo:'DIST-2026-01',distDate:'2026-03-05',amount:15354310,currency:'USD',distType:'Realised gain',sourceCompany:'PayWave 支付',status:'已完成'},
-  {id:5,fundId:2,distNo:'DIST-2025-02',distDate:'2025-12-01',amount:16000000,currency:'USD',distType:'Return of capital',sourceCompany:'Heytea 喜茶',status:'已完成'},
-  {id:6,fundId:2,distNo:'DIST-2026-02',distDate:'2026-02-20',amount:9937118,currency:'USD',distType:'Realised gain',sourceCompany:'Heytea 喜茶',status:'已完成'}
+  {id:1,fundId:1,distNo:'DIST-2023-01',distDate:'2023-05-20',amount:24000000,currency:'USD',distType:'Return of capital',sourceCompanyId:8,sourceCompany:'NorthStar 北极星',status:'已完成'},
+  {id:2,fundId:1,distNo:'DIST-2024-01',distDate:'2024-02-28',amount:20000000,currency:'USD',distType:'Realised gain',sourceCompanyId:8,sourceCompany:'NorthStar 北极星',status:'已完成'},
+  {id:3,fundId:1,distNo:'DIST-2025-01A',distDate:'2025-04-10',amount:9500000,currency:'USD',distType:'Return of capital',sourceCompanyId:5,sourceCompany:'Helio 海立',status:'已完成'},
+  {id:4,fundId:1,distNo:'DIST-2025-01B',distDate:'2025-04-10',amount:5200000,currency:'USD',distType:'Realised gain',sourceCompanyId:7,sourceCompany:'PayWave 支付',status:'已完成'},
+  {id:5,fundId:1,distNo:'DIST-2025-01C',distDate:'2025-04-10',amount:2645690.20,currency:'USD',distType:'Return of capital',sourceCompanyId:8,sourceCompany:'NorthStar 北极星',status:'已完成'},
+  {id:6,fundId:1,distNo:'DIST-2025-01D',distDate:'2025-04-10',amount:654309.80,currency:'USD',distType:'Dividend',sourceCompanyId:1,sourceCompany:'Heytea 喜茶',status:'已完成'},
+  {id:7,fundId:1,distNo:'DIST-2026-01',distDate:'2026-03-05',amount:15354310,currency:'USD',distType:'Realised gain',sourceCompanyId:8,sourceCompany:'NorthStar 北极星',status:'已完成'},
+  {id:8,fundId:2,distNo:'DIST-2025-02',distDate:'2025-12-01',amount:16000000,currency:'USD',distType:'Return of capital',sourceCompanyId:1,sourceCompany:'Heytea 喜茶',status:'已完成'},
+  {id:9,fundId:2,distNo:'DIST-2026-02',distDate:'2026-02-20',amount:9937118.01,currency:'USD',distType:'Realised gain',sourceCompanyId:1,sourceCompany:'Heytea 喜茶',status:'已完成'}
 ];
 
 // Quarterly fund-level track record. The 26Q1 row per fund ties to funds[] called /
 // distributed and to the NAV rolled up from fundCompanySummaries.
 const fundQuarterly = [
-  {id:1,fundId:1,quarter:'25Q1',asOfDate:'2025-03-31',cumCalled:152000000,cumDistributed:44000000,nav:118000000},
-  {id:2,fundId:1,quarter:'25Q2',asOfDate:'2025-06-30',cumCalled:152000000,cumDistributed:62000000,nav:121500000},
-  {id:3,fundId:1,quarter:'25Q3',asOfDate:'2025-09-30',cumCalled:152000000,cumDistributed:62000000,nav:125800000},
-  {id:4,fundId:1,quarter:'25Q4',asOfDate:'2025-12-31',cumCalled:152000000,cumDistributed:62000000,nav:129000000},
-  {id:5,fundId:1,quarter:'26Q1',asOfDate:'2026-03-31',cumCalled:152000000,cumDistributed:77354310,nav:132284635},
-  {id:6,fundId:2,quarter:'25Q1',asOfDate:'2025-03-31',cumCalled:165000000,cumDistributed:0,nav:172000000},
-  {id:7,fundId:2,quarter:'25Q2',asOfDate:'2025-06-30',cumCalled:215000000,cumDistributed:0,nav:196500000},
-  {id:8,fundId:2,quarter:'25Q3',asOfDate:'2025-09-30',cumCalled:215000000,cumDistributed:0,nav:200800000},
-  {id:9,fundId:2,quarter:'25Q4',asOfDate:'2025-12-31',cumCalled:215000000,cumDistributed:16000000,nav:198600000},
-  {id:10,fundId:2,quarter:'26Q1',asOfDate:'2026-03-31',cumCalled:215000000,cumDistributed:25937118,nav:203924214}
+  {id:1,fundId:1,quarter:'19Q3',asOfDate:'2019-09-30',cumCalled:45000000,cumDistributed:0,nav:41850000},
+  {id:2,fundId:1,quarter:'19Q4',asOfDate:'2019-12-31',cumCalled:45000000,cumDistributed:0,nav:41591225},
+  {id:3,fundId:1,quarter:'20Q1',asOfDate:'2020-03-31',cumCalled:45000000,cumDistributed:0,nav:41332450},
+  {id:4,fundId:1,quarter:'20Q2',asOfDate:'2020-06-30',cumCalled:85000000,cumDistributed:0,nav:77583608},
+  {id:5,fundId:1,quarter:'20Q3',asOfDate:'2020-09-30',cumCalled:85000000,cumDistributed:0,nav:77094811},
+  {id:6,fundId:1,quarter:'20Q4',asOfDate:'2020-12-31',cumCalled:85000000,cumDistributed:0,nav:76606013},
+  {id:7,fundId:1,quarter:'21Q1',asOfDate:'2021-03-31',cumCalled:85000000,cumDistributed:0,nav:76117216},
+  {id:8,fundId:1,quarter:'21Q2',asOfDate:'2021-06-30',cumCalled:85000000,cumDistributed:0,nav:75628418},
+  {id:9,fundId:1,quarter:'21Q3',asOfDate:'2021-09-30',cumCalled:85000000,cumDistributed:0,nav:76266715},
+  {id:10,fundId:1,quarter:'21Q4',asOfDate:'2021-12-31',cumCalled:85000000,cumDistributed:0,nav:76907145},
+  {id:11,fundId:1,quarter:'22Q1',asOfDate:'2022-03-31',cumCalled:85000000,cumDistributed:0,nav:77549627},
+  {id:12,fundId:1,quarter:'22Q2',asOfDate:'2022-06-30',cumCalled:127000000,cumDistributed:0,nav:115341933},
+  {id:13,fundId:1,quarter:'22Q3',asOfDate:'2022-09-30',cumCalled:127000000,cumDistributed:0,nav:118620746},
+  {id:14,fundId:1,quarter:'22Q4',asOfDate:'2022-12-31',cumCalled:127000000,cumDistributed:0,nav:122776907},
+  {id:15,fundId:1,quarter:'23Q1',asOfDate:'2023-03-31',cumCalled:127000000,cumDistributed:0,nav:125853813},
+  {id:16,fundId:1,quarter:'23Q2',asOfDate:'2023-06-30',cumCalled:127000000,cumDistributed:24000000,nav:112618640},
+  {id:17,fundId:1,quarter:'23Q3',asOfDate:'2023-09-30',cumCalled:127000000,cumDistributed:24000000,nav:115430318},
+  {id:18,fundId:1,quarter:'23Q4',asOfDate:'2023-12-31',cumCalled:127000000,cumDistributed:24000000,nav:118306621},
+  {id:19,fundId:1,quarter:'24Q1',asOfDate:'2024-03-31',cumCalled:152000000,cumDistributed:44000000,nav:129438034},
+  {id:20,fundId:1,quarter:'24Q2',asOfDate:'2024-06-30',cumCalled:152000000,cumDistributed:44000000,nav:134712951},
+  {id:21,fundId:1,quarter:'24Q3',asOfDate:'2024-09-30',cumCalled:152000000,cumDistributed:44000000,nav:140611663},
+  {id:22,fundId:1,quarter:'24Q4',asOfDate:'2024-12-31',cumCalled:152000000,cumDistributed:44000000,nav:144087332},
+  {id:23,fundId:1,quarter:'25Q1',asOfDate:'2025-03-31',cumCalled:152000000,cumDistributed:44000000,nav:147641458},
+  {id:24,fundId:1,quarter:'25Q2',asOfDate:'2025-06-30',cumCalled:152000000,cumDistributed:62000000,nav:136328643},
+  {id:25,fundId:1,quarter:'25Q3',asOfDate:'2025-09-30',cumCalled:152000000,cumDistributed:62000000,nav:139676975},
+  {id:26,fundId:1,quarter:'25Q4',asOfDate:'2025-12-31',cumCalled:152000000,cumDistributed:62000000,nav:143100000},
+  {id:27,fundId:1,quarter:'26Q1',asOfDate:'2026-03-31',cumCalled:152000000,cumDistributed:77354310,nav:132284635},
+  {id:28,fundId:2,quarter:'21Q2',asOfDate:'2021-06-30',cumCalled:60000000,cumDistributed:0,nav:55800000},
+  {id:29,fundId:2,quarter:'21Q3',asOfDate:'2021-09-30',cumCalled:60000000,cumDistributed:0,nav:55261751},
+  {id:30,fundId:2,quarter:'21Q4',asOfDate:'2021-12-31',cumCalled:60000000,cumDistributed:0,nav:54723501},
+  {id:31,fundId:2,quarter:'22Q1',asOfDate:'2022-03-31',cumCalled:60000000,cumDistributed:0,nav:54185252},
+  {id:32,fundId:2,quarter:'22Q2',asOfDate:'2022-06-30',cumCalled:60000000,cumDistributed:0,nav:53647002},
+  {id:33,fundId:2,quarter:'22Q3',asOfDate:'2022-09-30',cumCalled:115000000,cumDistributed:0,nav:101791776},
+  {id:34,fundId:2,quarter:'22Q4',asOfDate:'2022-12-31',cumCalled:115000000,cumDistributed:0,nav:100760132},
+  {id:35,fundId:2,quarter:'23Q1',asOfDate:'2023-03-31',cumCalled:115000000,cumDistributed:0,nav:99728487},
+  {id:36,fundId:2,quarter:'23Q2',asOfDate:'2023-06-30',cumCalled:115000000,cumDistributed:0,nav:100177295},
+  {id:37,fundId:2,quarter:'23Q3',asOfDate:'2023-09-30',cumCalled:115000000,cumDistributed:0,nav:100617128},
+  {id:38,fundId:2,quarter:'23Q4',asOfDate:'2023-12-31',cumCalled:115000000,cumDistributed:0,nav:101047616},
+  {id:39,fundId:2,quarter:'24Q1',asOfDate:'2024-03-31',cumCalled:115000000,cumDistributed:0,nav:101468380},
+  {id:40,fundId:2,quarter:'24Q2',asOfDate:'2024-06-30',cumCalled:165000000,cumDistributed:0,nav:146009425},
+  {id:41,fundId:2,quarter:'24Q3',asOfDate:'2024-09-30',cumCalled:165000000,cumDistributed:0,nav:149937812},
+  {id:42,fundId:2,quarter:'24Q4',asOfDate:'2024-12-31',cumCalled:165000000,cumDistributed:0,nav:154833111},
+  {id:43,fundId:2,quarter:'25Q1',asOfDate:'2025-03-31',cumCalled:165000000,cumDistributed:0,nav:158005805},
+  {id:44,fundId:2,quarter:'25Q2',asOfDate:'2025-06-30',cumCalled:215000000,cumDistributed:0,nav:203723715},
+  {id:45,fundId:2,quarter:'25Q3',asOfDate:'2025-09-30',cumCalled:215000000,cumDistributed:0,nav:210671721},
+  {id:46,fundId:2,quarter:'25Q4',asOfDate:'2025-12-31',cumCalled:215000000,cumDistributed:16000000,nav:207700000},
+  {id:47,fundId:2,quarter:'26Q1',asOfDate:'2026-03-31',cumCalled:215000000,cumDistributed:25937118.01,nav:203924214}
 ];
 
 
@@ -731,8 +806,6 @@ const fundQuarterly = [
 // terms, the LP portal and pipeline / IC are owned by other systems (see the
 // out-of-scope note on the /roadmap page).
 const roadmapItems = [
-  {key:'perfdash',phase:'P1',layerZh:'仪表盘',layerEn:'Dashboard',moduleZh:'基金业绩仪表盘',moduleEn:'Fund performance dashboard',descZh:'基金层业绩趋势一屏看全：出资、分配与 NAV 随时间的走势曲线，DPI / RVPI / TVPI 变化，以及多支基金按 Vintage 的横向对比。目前只有季度明细表，看得到数字但看不出趋势。',descEn:'Fund-level performance on one screen: paid-in, distributions and NAV over time, the DPI / RVPI / TVPI trend, and a side-by-side comparison of funds by vintage. Today there is only a quarterly table — the numbers are there but the trend is not.',needZh:'现有季度数据即可支撑',needEn:'Supported by the existing quarterly data'},
-  {key:'portdash',phase:'P1',layerZh:'仪表盘',layerEn:'Dashboard',moduleZh:'组合监控仪表盘',moduleEn:'Portfolio monitoring dashboard',descZh:'组合暴露与集中度：行业、轮次、币种分布，前五大持仓占 NAV 比重，单项目集中度提醒，以及按估值环比变动排序的重点关注清单。',descEn:'Portfolio exposure and concentration: breakdown by sector, round and currency, the share of NAV held in the top five positions, single-position concentration alerts, and a watch list ranked by quarter-on-quarter valuation change.',needZh:'现有持仓与估值数据即可支撑',needEn:'Supported by the existing holdings and valuation data'},
   {key:'close',phase:'P1',layerZh:'流程',layerEn:'Process',moduleZh:'季度估值与关账',moduleEn:'Quarterly valuation & close',descZh:'切换报告期查看任意历史季度的组合与基金状态；估值桥呈现期初 NAV → 新增投资 → 退出回收 → 重估 → 期末 NAV 的变动来源；季度定稿后锁定，不再被随手改动。',descEn:'Switch reporting period to view the portfolio and funds as at any past quarter; a valuation bridge showing opening NAV → new investments → exit proceeds → revaluation → closing NAV; and lock-down once a quarter is signed off.',needZh:'需补齐历史季度的估值记录',needEn:'Requires a full history of quarterly valuation records'},
   {key:'netperf',phase:'P2',layerZh:'收益测算',layerEn:'Returns',moduleZh:'费用与 Carry 对业绩的影响',moduleEn:'Impact of fees and carry',descZh:'管理费与 Carry 的计提，以及从 Gross 到 Net 的业绩过渡 —— 同一支基金的 Gross MoC / IRR 如何逐层变成 Net，让对外沟通的口径有依据。',descEn:'Management fee and carry accrual, plus the walk from gross to net — how a fund\'s gross MoC / IRR becomes its net figure step by step, so external reporting rests on a documented basis.',needZh:'需确认各基金的费用与 Carry 条款',needEn:'Requires the fee and carry terms per fund'},
   {key:'fxview',phase:'P2',layerZh:'收益测算',layerEn:'Returns',moduleZh:'多币种报告',moduleEn:'Multi-currency reporting',descZh:'按指定报告币种出具组合与基金报表，并把项目本币的经营收益与汇兑损益分开列示，避免汇率波动混进业绩判断。当前全系统使用单一固定汇率。',descEn:'Report the portfolio and funds in a chosen reporting currency, and separate local-currency return from FX effect so exchange-rate moves do not distort performance. Today a single fixed rate is used everywhere.',needZh:'需要一套历史汇率来源',needEn:'Requires a historical FX rate source'},
@@ -898,6 +971,7 @@ const icons = {
   fund: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><path d="M12 18V6"/></svg>',
   finance: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+  analytics: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v16a2 2 0 002 2h16"/><path d="M7 15l4-5 3.5 3.5L21 6"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
   search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
   download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
@@ -932,6 +1006,7 @@ function render() {
   else if (base === '/fund' && parts.length === 3) content = renderFundDetail(parseInt(parts[2]));
   else if (base === '/fund') content = renderFundList();
   else if (base === '/roadmap') content = renderRoadmap();
+  else if (base === '/analytics') content = renderAnalytics();
   else if (base === '/company' && parts.length === 2) content = renderCompanyList();
   else if (base === '/company' && parts.length === 3 && parts[2] !== 'new') content = renderCompanyDetail(parseInt(parts[2]));
   else if (base === '/company' && parts[2] === 'new') content = renderNewCompany();
@@ -950,6 +1025,7 @@ function renderSidebar() {
     <div class="nav-item ${currentPage.startsWith('/investment-history') ? 'active' : ''}" onclick="navigate('/investment-history')">${icons.investment} ${t('nav_transactions')}</div>
     <div class="nav-item ${currentPage.startsWith('/fund') ? 'active' : ''}" onclick="navigate('/fund')">${icons.fund} ${t('nav_funds')}</div>
     <div class="nav-item ${currentPage.startsWith('/dashboard') ? 'active' : ''}" onclick="navigate('/dashboard')">${icons.dashboard} ${t('nav_overview')}</div>
+    <div class="nav-item ${currentPage.startsWith('/analytics') ? 'active' : ''}" onclick="navigate('/analytics')">${icons.analytics} ${t('nav_analytics')}</div>
     <div class="nav-item is-planned ${currentPage.startsWith('/roadmap') ? 'active' : ''}" onclick="navigate('/roadmap')">${icons.download} ${t('nav_roadmap')}</div>
   </nav>
 </div>`;
@@ -963,6 +1039,7 @@ function renderHeader() {
     '/investment-history': t('nav_transactions'),
     '/fund': t('nav_funds'),
     '/roadmap': t('nav_roadmap'),
+    '/analytics': t('nav_analytics'),
   };
   let title = titleMap[base] || '';
   let breadcrumb = 'TPP' + (title ? ' / ' + title : '');
@@ -1543,6 +1620,548 @@ function renderFundPerformanceTab(id) {
   </tbody>
 </table></div>
 <div class="kpi-asof">${zh ? 'NAV 后的百分比为环比变化 · DPI / RVPI / TVPI 均按当期累计已缴计算' : 'The percentage after NAV is quarter-on-quarter change · DPI / RVPI / TVPI are computed against paid-in as of that quarter'}</div>`;
+}
+
+// ========== Chart primitives ==========
+// Inline SVG, no charting library. Deliberately plain — hairline axes, no
+// gridline clutter, no gradients, no tooltips. These sit next to tables and are
+// there to show shape; the exact figures stay in the tables underneath.
+const CH = { grid: '#F1F1F4', axis: '#D4D4DA', mute: '#9A9AA3', text: '#6B6B74', ink: '#0F0F14' };
+const CH_SERIES = ['#1F4FD9', '#0F0F14', '#9A9AA3'];
+
+// Round an axis to human numbers (1 / 2 / 5 x 10^n) so labels read cleanly.
+function niceTicks(min, max, count) {
+  const span = (max - min) || Math.abs(max) || 1;
+  const raw = span / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const err = raw / mag;
+  const step = mag * (err >= 7 ? 10 : err >= 3 ? 5 : err >= 1.5 ? 2 : 1);
+  const out = [];
+  const lo = Math.floor(min / step) * step;
+  const hi = Math.ceil(max / step) * step;
+  for (let v = lo; v <= hi + step / 2; v += step) out.push(Math.abs(v) < step / 1e6 ? 0 : v);
+  return out;
+}
+
+function chartLegend(series) {
+  return '<div class="chart-legend">' + series.map(s =>
+    '<span class="cl-item"><i style="background:' + s.color + (s.dashed ? ';opacity:0.45' : '') + '"></i>' + s.name + '</span>'
+  ).join('') + '</div>';
+}
+
+// series: [{ name, color, values:[number|null], dashed, area }]
+function svgLineChart(o) {
+  const w = o.w || 1264, h = o.h || 260;
+  const padL = o.padL || 66, padR = 16, padT = 12, padB = 26;
+  const iw = w - padL - padR, ih = h - padT - padB;
+  const flat = [];
+  o.series.forEach(s => s.values.forEach(v => { if (v != null && !Number.isNaN(v)) flat.push(v); }));
+  if (!flat.length) return '';
+  let lo = Math.min.apply(null, flat), hi = Math.max.apply(null, flat);
+  if (o.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  if (o.include != null) { lo = Math.min(lo, o.include); hi = Math.max(hi, o.include); }
+  const ticks = niceTicks(lo, hi, 4);
+  lo = ticks[0]; hi = ticks[ticks.length - 1];
+  const n = o.xLabels.length;
+  const X = i => padL + (n <= 1 ? iw / 2 : iw * i / (n - 1));
+  const Y = v => padT + ih * (1 - (v - lo) / ((hi - lo) || 1));
+
+  let s = '';
+  ticks.forEach(v => {
+    const isRef = (o.zero && v === 0) || (o.include != null && Math.abs(v - o.include) < 1e-9);
+    s += '<line x1="' + padL + '" y1="' + Y(v).toFixed(1) + '" x2="' + (w - padR) + '" y2="' + Y(v).toFixed(1) +
+      '" stroke="' + (isRef ? CH.axis : CH.grid) + '" stroke-width="1"' + (isRef ? '' : '') + '/>';
+    s += '<text x="' + (padL - 9) + '" y="' + (Y(v) + 3.5).toFixed(1) + '" text-anchor="end" font-size="10.5" fill="' + CH.mute + '">' + o.yFmt(v) + '</text>';
+  });
+  // An empty label means "no tick here" — callers thin out dense axes by passing
+  // blanks rather than by relying on a modulus, which double-printed the last
+  // label when the series length was not a multiple of the interval.
+  const every = o.labelEvery || 1;
+  let lastShown = -99;
+  o.xLabels.forEach((lb, i) => {
+    if (!lb) return;
+    if (i % every !== 0 && i !== n - 1) return;
+    if (i - lastShown < Math.max(every / 2, 1)) return;
+    lastShown = i;
+    s += '<text x="' + X(i).toFixed(1) + '" y="' + (h - 8) + '" text-anchor="middle" font-size="10.5" fill="' + CH.mute + '">' + lb + '</text>';
+  });
+  o.series.forEach(se => {
+    let d = '', first = -1, last = -1;
+    se.values.forEach((v, i) => {
+      if (v == null || Number.isNaN(v)) return;
+      d += (first < 0 ? 'M' : 'L') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1) + ' ';
+      if (first < 0) first = i;
+      last = i;
+    });
+    if (!d) return;
+    if (se.area) {
+      const base = Y(o.include != null ? o.include : Math.max(lo, 0));
+      s += '<path d="' + d + 'L' + X(last).toFixed(1) + ' ' + base.toFixed(1) + ' L' + X(first).toFixed(1) + ' ' + base.toFixed(1) + ' Z" fill="' + se.color + '" opacity="0.06"/>';
+    }
+    s += '<path d="' + d + '" fill="none" stroke="' + se.color + '" stroke-width="' + (se.width || 1.7) + '"' +
+      (se.dashed ? ' stroke-dasharray="4 3"' : '') + ' stroke-linejoin="round" stroke-linecap="round"/>';
+    s += '<circle cx="' + X(last).toFixed(1) + '" cy="' + Y(se.values[last]).toFixed(1) + '" r="2.6" fill="' + se.color + '"/>';
+  });
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:auto;display:block">' + s + '</svg>';
+}
+
+// groups: [{ label, bars:[number] }]  seriesMeta: [{ name, color }]
+function svgBarChart(o) {
+  const w = o.w || 1264, h = o.h || 240;
+  const padL = o.padL || 66, padR = 16, padT = 12, padB = 26;
+  const iw = w - padL - padR, ih = h - padT - padB;
+  const flat = [];
+  o.groups.forEach(g => g.bars.forEach(v => flat.push(v || 0)));
+  const ticks = niceTicks(Math.min(0, Math.min.apply(null, flat)), Math.max.apply(null, flat), 4);
+  const lo = ticks[0], hi = ticks[ticks.length - 1];
+  const Y = v => padT + ih * (1 - (v - lo) / ((hi - lo) || 1));
+  const n = o.groups.length, k = o.series.length;
+  const slot = iw / n, bw = Math.min(o.maxBar || 18, (slot * 0.62) / k);
+
+  let s = '';
+  ticks.forEach(v => {
+    s += '<line x1="' + padL + '" y1="' + Y(v).toFixed(1) + '" x2="' + (w - padR) + '" y2="' + Y(v).toFixed(1) +
+      '" stroke="' + (v === 0 ? CH.axis : CH.grid) + '" stroke-width="1"/>';
+    s += '<text x="' + (padL - 9) + '" y="' + (Y(v) + 3.5).toFixed(1) + '" text-anchor="end" font-size="10.5" fill="' + CH.mute + '">' + o.yFmt(v) + '</text>';
+  });
+  const every = o.labelEvery || 1;
+  o.groups.forEach((g, i) => {
+    const cx = padL + slot * (i + 0.5);
+    g.bars.forEach((v, j) => {
+      const x = cx - (k * bw) / 2 + j * bw;
+      const y0 = Y(0), y1 = Y(v || 0);
+      s += '<rect x="' + (x + 0.4).toFixed(1) + '" y="' + Math.min(y0, y1).toFixed(1) + '" width="' + (bw - 0.8).toFixed(1) +
+        '" height="' + Math.max(Math.abs(y1 - y0), 0.6).toFixed(1) + '" fill="' + o.series[j].color + '" opacity="' + (o.series[j].opacity || 1) + '"/>';
+    });
+    // Count back from the latest period so the most recent bar is always
+    // labelled — that is the one being read.
+    if ((n - 1 - i) % every === 0) {
+      s += '<text x="' + cx.toFixed(1) + '" y="' + (h - 8) + '" text-anchor="middle" font-size="10.5" fill="' + CH.mute + '">' + g.label + '</text>';
+    }
+  });
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:auto;display:block">' + s + '</svg>';
+}
+
+// Share-of-total breakdown. A ranked bar list beats a pie for reading exact
+// weights, and it degrades gracefully to a table.
+function renderBreakdown(items, total) {
+  if (!items.length) return '<div style="font-size:12px;color:var(--n-400)">' + NA + '</div>';
+  return '<div class="bd-list">' + items.map(it => {
+    const pct = total > 0 ? it.value / total * 100 : 0;
+    return '<div class="bd-row">' +
+      '<div class="bd-name" title="' + it.label + '">' + it.label + '</div>' +
+      '<div class="bd-track"><span style="width:' + Math.max(pct, 0.6).toFixed(1) + '%"></span></div>' +
+      '<div class="bd-val">' + fmtMoney(it.value) + '</div>' +
+      '<div class="bd-pct">' + pct.toFixed(1) + '%</div>' +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+// ========== Analytics dashboards ==========
+// Financing rounds are an ordered dimension, so they need an explicit sequence —
+// alphabetical sorting puts "Pre-A" after "E".
+const ROUND_SEQ = ['Pre-A', 'A', 'A+', 'B', 'B+', 'C', 'C+', 'D', 'D+', 'E', 'E+', 'F'];
+function holdingRoundRank(r) { const i = ROUND_SEQ.indexOf(r); return i < 0 ? 99 : i; }
+
+// Portfolio-level holdings, collapsed across funds (a company held by two funds
+// is one position here) or scoped to a single fund.
+function getHoldings(fundId) {
+  const rows = fundCompanySummaries.filter(r => (!fundId || r.fundId === fundId) && (r.unrealised > 0 || r.priorNav > 0));
+  const byCompany = {};
+  rows.forEach(r => {
+    const c = companies.find(x => x.id === r.companyId);
+    if (!c) return;
+    const k = r.companyId;
+    if (!byCompany[k]) byCompany[k] = {
+      companyId: k, company: c, nav: 0, invested: 0, realised: 0,
+      priorNav: 0, periodRealised: 0, rounds: [], funds: [],
+    };
+    const b = byCompany[k];
+    b.nav += r.unrealised || 0;
+    b.invested += r.totalInvested || 0;
+    b.realised += r.realised || 0;
+    b.priorNav += r.priorNav || 0;
+    b.periodRealised += r.periodRealised || 0;
+    if (r.entryRound && b.rounds.indexOf(r.entryRound) < 0) b.rounds.push(r.entryRound);
+    const fn = (funds.find(f => f.id === r.fundId) || {}).fundShortName;
+    if (fn && b.funds.indexOf(fn) < 0) b.funds.push(fn);
+  });
+  // Where two funds entered the same company at different rounds, the position's
+  // entry round is the earliest one — grouping by "B / C" would invent a
+  // category that does not exist.
+  return Object.keys(byCompany).map(k => {
+    const b = byCompany[k];
+    b.rounds.sort((x, y) => holdingRoundRank(x) - holdingRoundRank(y));
+    b.entryRound = b.rounds[0] || null;
+    // Value movement over the quarter must add back what was taken out as cash,
+    // otherwise a realisation reads as a write-down.
+    b.moveAbs = (b.nav + b.periodRealised) - b.priorNav;
+    b.movePct = b.priorNav > 0 ? b.moveAbs / b.priorNav : null;
+    b.moc = b.invested > 0 ? (b.nav + b.realised) / b.invested : null;
+    return b;
+  }).sort((a, b) => b.nav - a.nav);
+}
+
+function analyticsScopeBar(tab, fundId) {
+  const pill = (label, id) => '<button class="fund-pill ' + (fundId === id ? 'fund-pill-active' : '') +
+    '" onclick="navigate(\'/analytics?tab=' + tab + '&fund=' + id + '\')"><span class="fund-pill-label">' + label + '</span></button>';
+  return '<div class="fund-switcher">' + pill(t('scope_all_funds'), 0) +
+    funds.map(f => pill(f.fundShortName, f.id)).join('') + '</div>';
+}
+
+function renderAnalytics() {
+  const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+  const tab = params.get('tab') || 'fund';
+  const fundId = parseInt(params.get('fund') || '0') || 0;
+  const tabDefs = [
+    { key: 'fund', label: t('adash_fund') },
+    { key: 'portfolio', label: t('adash_portfolio') },
+  ];
+  const ccyBtn = (label, code) => '<button class="btn btn-sm ' + (displayCurrency === code ? 'btn-primary' : 'btn-default') +
+    '" onclick="setDisplayCurrency(\'' + code + '\')">' + label + '</button>';
+
+  return `
+<div class="page-header">
+  <h1>${t('nav_analytics')}</h1>
+  <div class="actions">
+    <div style="display:inline-flex;border:1px solid var(--n-200);border-radius:4px;overflow:hidden">${ccyBtn('USD', 'USD')}${ccyBtn('CNY', 'CNY')}</div>
+  </div>
+</div>
+<div class="card">
+  <div class="tabs-row">
+    <div class="tabs">
+      ${tabDefs.map(td => '<button class="tab ' + (tab === td.key ? 'active' : '') +
+        '" onclick="navigate(\'/analytics?tab=' + td.key + '&fund=' + fundId + '\')">' + td.label + '</button>').join('')}
+    </div>
+    ${analyticsScopeBar(tab, fundId)}
+  </div>
+  ${tab === 'portfolio' ? renderPortfolioDash(fundId) : renderFundPerfDash(fundId)}
+</div>`;
+}
+
+// ---------- Fund performance ----------
+function renderFundPerfDash(fundId) {
+  const zh = uiLang === 'zh';
+  const scope = fundId ? funds.filter(f => f.id === fundId) : funds;
+  if (!scope.length) return renderEmpty(zh ? '暂无基金' : 'No funds');
+
+  const seriesOf = f => fundQuarterly.filter(q => q.fundId === f.id).sort((a, b) => a.asOfDate.localeCompare(b.asOfDate));
+
+  // --- KPI strip (aggregate over the current scope) ---
+  const agg = scope.reduce((a, f) => {
+    const m = getFundMetrics(f.id);
+    a.commitment += m.commitment; a.called += m.called;
+    a.distributed += m.distributed; a.nav += m.nav;
+    return a;
+  }, { commitment: 0, called: 0, distributed: 0, nav: 0 });
+  const aggDpi = agg.called > 0 ? agg.distributed / agg.called : null;
+  const aggRvpi = agg.called > 0 ? agg.nav / agg.called : null;
+  const aggTvpi = agg.called > 0 ? (agg.distributed + agg.nav) / agg.called : null;
+  const kpi = [
+    [t('fund_commitment'), fmtMoney(agg.commitment)],
+    [t('fund_paid_in'), fmtMoney(agg.called)],
+    [t('fund_distributed'), fmtMoney(agg.distributed)],
+    [t('fund_nav'), fmtMoney(agg.nav)],
+    [t('fund_dpi'), fmtRatio(aggDpi)],
+    [t('fund_rvpi'), fmtRatio(aggRvpi)],
+    [t('fund_tvpi'), fmtRatio(aggTvpi)],
+  ];
+
+  // --- J-curve: cumulative net cashflow to LPs, aligned on quarters since
+  // first drawdown so two vintages can be compared on the same axis. ---
+  const maxLen = Math.max.apply(null, funds.map(f => seriesOf(f).length));
+  // Label only the year boundaries; blanks tell the chart to skip a tick.
+  const jLabels = [];
+  for (let i = 0; i < maxLen; i++) jLabels.push(i % 4 === 0 ? 'Y' + (i / 4 + 1) : '');
+  // Charts in the two-column row render at roughly half the page width, so they
+  // need their own viewBox — reusing the full-width one shrank axis labels to
+  // about 5px on screen.
+  const W_FULL = 1264, W_HALF = 604;
+  const jSeries = scope.map((f, i) => {
+    const s = seriesOf(f);
+    const vals = [];
+    for (let k = 0; k < maxLen; k++) vals.push(k < s.length ? s[k].cumDistributed - s[k].cumCalled : null);
+    return { name: f.fundShortName, color: CH_SERIES[i % CH_SERIES.length], values: vals, area: scope.length === 1 };
+  });
+
+  // --- Multiple progression: TVPI split into DPI + RVPI. Only legible for one
+  // fund at a time, so when the scope is "all funds" show TVPI per fund. ---
+  let multChart, multLegend, multTitle;
+  if (scope.length === 1) {
+    const s = seriesOf(scope[0]);
+    const lbl = s.map(q => q.quarter);
+    const mk = fn => s.map(q => q.cumCalled > 0 ? fn(q) : null);
+    const ms = [
+      { name: 'TVPI', color: CH_SERIES[0], values: mk(q => (q.cumDistributed + q.nav) / q.cumCalled), width: 2 },
+      { name: 'RVPI', color: CH_SERIES[1], values: mk(q => q.nav / q.cumCalled), dashed: true },
+      { name: 'DPI', color: CH_SERIES[2], values: mk(q => q.cumDistributed / q.cumCalled) },
+    ];
+    multChart = svgLineChart({ w: W_HALF, h: 250, padL: 46, series: ms, xLabels: lbl, labelEvery: 4, include: 1, yFmt: v => v.toFixed(2) + 'x' });
+    multLegend = chartLegend(ms);
+    multTitle = scope[0].fundShortName + (zh ? ' · 倍数走势' : ' · multiple progression');
+  } else {
+    const ms = scope.map((f, i) => {
+      const s = seriesOf(f);
+      const vals = [];
+      for (let k = 0; k < maxLen; k++) vals.push(k < s.length && s[k].cumCalled > 0 ? (s[k].cumDistributed + s[k].nav) / s[k].cumCalled : null);
+      return { name: f.fundShortName + ' TVPI', color: CH_SERIES[i % CH_SERIES.length], values: vals };
+    });
+    multChart = svgLineChart({ w: W_HALF, h: 250, padL: 46, series: ms, xLabels: jLabels, labelEvery: 4, include: 1, yFmt: v => v.toFixed(2) + 'x' });
+    multLegend = chartLegend(ms);
+    multTitle = zh ? 'TVPI 走势 · 按成立后年数对齐' : 'TVPI progression · aligned on years since inception';
+  }
+
+  // --- Quarterly capital flow for the most recent 3 years ---
+  const flowFund = scope[0];
+  const flowAll = seriesOf(flowFund);
+  const flow = flowAll.slice(Math.max(0, flowAll.length - 12));
+  const flowSeries = [
+    { name: t('fund_paid_in'), color: CH_SERIES[1], opacity: 0.85 },
+    { name: t('fund_distributed'), color: CH_SERIES[0] },
+    { name: t('fund_nav'), color: CH_SERIES[2], opacity: 0.7 },
+  ];
+  const flowChart = svgBarChart({
+    w: W_HALF, h: 250, padL: 50, maxBar: 11, series: flowSeries, labelEvery: 2,
+    groups: flow.map(q => ({ label: q.quarter, bars: [q.cumCalled, q.cumDistributed, q.nav] })),
+    yFmt: v => (v / 1e6).toFixed(0) + 'M',
+  });
+
+  // --- Vintage comparison: same funds, aligned on years since inception.
+  // Only completed years — a partial year would render as an all-blank row. ---
+  const years = [];
+  for (let y = 1; y <= Math.floor(maxLen / 4); y++) years.push(y);
+  const vintageRows = years.map(y => {
+    const idx = y * 4 - 1;
+    return {
+      year: y,
+      cells: funds.map(f => {
+        const s = seriesOf(f);
+        const q = s[Math.min(idx, s.length - 1)];
+        if (!q || idx >= s.length) return null;
+        return {
+          quarter: q.quarter,
+          tvpi: q.cumCalled > 0 ? (q.cumDistributed + q.nav) / q.cumCalled : null,
+          dpi: q.cumCalled > 0 ? q.cumDistributed / q.cumCalled : null,
+          called: q.cumCalled,
+        };
+      }),
+    };
+  });
+
+  return `
+<div class="fund-strip" style="grid-template-columns:repeat(${kpi.length},1fr)">
+  ${kpi.map(([l, v]) => '<div class="fss-item"><div class="fss-label">' + l + '</div><div class="fss-value">' + v + '</div></div>').join('')}
+</div>
+<div class="kpi-asof">${zh ? '口径：已缴 / 已分配来自出资与分配台账；NAV 由持仓公允价值汇总；倍数一律按当期累计已缴现算。' : 'Basis: paid-in and distributions come from the call and distribution ledgers; NAV rolls up from holdings at fair value; multiples are always computed against paid-in as of that quarter.'}</div>
+
+<div class="chart-block">
+  <div class="chart-head">
+    <div>
+      <div class="chart-title">${zh ? 'J 曲线 · LP 累计净现金流' : 'J-curve · cumulative net cashflow to LPs'}</div>
+      <div class="chart-note">${zh
+        ? '已分配 − 已缴。曲线穿越零轴即为回本时点；横轴按成立后年数对齐' + (scope.length > 1 ? '，两支基金可直接比较。' : '。')
+        : 'Distributions less paid-in. The curve crossing zero is the break-even point; the axis is aligned on years since inception' + (scope.length > 1 ? ', so the vintages are directly comparable.' : '.')}</div>
+    </div>
+    ${chartLegend(jSeries)}
+  </div>
+  ${svgLineChart({ w: W_FULL, h: 250, series: jSeries, xLabels: jLabels, labelEvery: 4, zero: true, include: 0, yFmt: v => (v / 1e6).toFixed(0) + 'M' })}
+</div>
+
+<div class="grid-2 chart-grid">
+  <div class="chart-block">
+    <div class="chart-head"><div><div class="chart-title">${multTitle}</div></div>${multLegend}</div>
+    ${multChart}
+  </div>
+  <div class="chart-block">
+    <div class="chart-head">
+      <div>
+        <div class="chart-title">${flowFund.fundShortName} · ${zh ? '累计出资 / 分配 / NAV' : 'cumulative paid-in / distributed / NAV'}</div>
+        <div class="chart-note">${zh ? '近三年，累计口径' : 'Last three years, cumulative'}</div>
+      </div>
+      ${chartLegend(flowSeries)}
+    </div>
+    ${flowChart}
+  </div>
+</div>
+
+<h4 class="subsection-title" style="margin-top:var(--space-6)">${zh ? 'Vintage 对比 · 按成立后年数对齐' : 'Vintage comparison · aligned on years since inception'}
+  <span style="font-weight:400;color:var(--n-400);font-size:11.5px;margin-left:6px">${zh ? '始终列出全部基金，不受上方筛选影响' : 'always lists every fund, regardless of the scope selected above'}</span>
+</h4>
+<div class="table-wrap"><table class="data-table">
+  <thead><tr>
+    <th>${zh ? '成立后' : 'Since inception'}</th>
+    ${funds.map(f => '<th colspan="3" style="text-align:right">' + f.fundShortName + ' <span style="color:var(--n-400);font-weight:400">· Vintage ' + f.vintageYear + '</span></th>').join('')}
+  </tr>
+  <tr>
+    <th></th>
+    ${funds.map(() => '<th style="text-align:right">' + t('perf_cum_called') + '</th><th style="text-align:right">' + t('fund_dpi') + '</th><th style="text-align:right">' + t('fund_tvpi') + '</th>').join('')}
+  </tr></thead>
+  <tbody>
+    ${vintageRows.map(r => '<tr><td>' + (zh ? '第 ' + r.year + ' 年' : 'Year ' + r.year) + '</td>' +
+      r.cells.map(c => c
+        ? '<td class="text-right">' + fmtMoney(c.called) + '</td><td class="text-right">' + fmtRatio(c.dpi) + '</td><td class="text-right">' + fmtRatio(c.tvpi) + '</td>'
+        : '<td class="text-right text-muted">' + NA + '</td><td class="text-right text-muted">' + NA + '</td><td class="text-right text-muted">' + NA + '</td>'
+      ).join('') + '</tr>').join('')}
+  </tbody>
+</table></div>
+<div class="kpi-asof">${zh ? '每一行取该基金成立满 N 年当季的累计数，而非同一日历季度 — 不同 Vintage 的绝对数不可直接比较。Fund II 成立于 2021 年，目前仅走过 5 个完整年度。' : 'Each row takes the cumulative figures at the quarter marking N years since inception, not the same calendar quarter — absolute figures across vintages are not comparable. Fund II was formed in 2021 and has only completed five years.'}</div>`;
+}
+
+// ---------- Portfolio monitoring ----------
+function renderPortfolioDash(fundId) {
+  const zh = uiLang === 'zh';
+  const hs = getHoldings(fundId);
+  if (!hs.length) return renderEmpty(zh ? '暂无在管持仓' : 'No live holdings');
+
+  const navTotal = hs.reduce((s, h) => s + h.nav, 0);
+  const investedTotal = hs.reduce((s, h) => s + h.invested, 0);
+  const realisedTotal = hs.reduce((s, h) => s + h.realised, 0);
+  const priorTotal = hs.reduce((s, h) => s + h.priorNav, 0);
+  const periodRealisedTotal = hs.reduce((s, h) => s + h.periodRealised, 0);
+  const moveAbs = (navTotal + periodRealisedTotal) - priorTotal;
+  const movePct = priorTotal > 0 ? moveAbs / priorTotal * 100 : null;
+  const live = hs.filter(h => h.nav > 0);
+  const top5 = live.slice(0, 5).reduce((s, h) => s + h.nav, 0);
+  const top5Pct = navTotal > 0 ? top5 / navTotal * 100 : 0;
+  const largest = live[0];
+  const largestPct = navTotal > 0 && largest ? largest.nav / navTotal * 100 : 0;
+  const CONC_LIMIT = 20;
+
+  const kpi = [
+    [zh ? '在管项目' : 'Live positions', String(live.length)],
+    [t('fund_nav'), fmtMoney(navTotal)],
+    [zh ? '累计投入' : 'Total invested', fmtMoney(investedTotal)],
+    [zh ? '合计倍数' : 'Gross MoC', fmtRatio(investedTotal > 0 ? (navTotal + realisedTotal) / investedTotal : null)],
+    [zh ? '本季估值变动' : 'Value movement', (movePct >= 0 ? '+' : '') + movePct.toFixed(2) + '%'],
+    [zh ? '前五大占比' : 'Top 5 concentration', top5Pct.toFixed(1) + '%'],
+  ];
+
+  // Nominal dimensions rank by weight; an ordered dimension like the financing
+  // round keeps its own sequence, otherwise the reader has to re-sort mentally.
+  const group = (keyFn, labelFn, keySort) => {
+    const m = {};
+    live.forEach(h => { const k = keyFn(h); if (!k) return; m[k] = (m[k] || 0) + h.nav; });
+    const keys = Object.keys(m);
+    keys.sort(keySort ? keySort : (a, b) => m[b] - m[a]);
+    return keys.map(k => ({ label: labelFn ? labelFn(k) : k, value: m[k] }));
+  };
+  const bySector = group(h => h.company.thematicApproach);
+  const byRound = group(h => h.entryRound, k => (zh ? k + ' 轮' : 'Round ' + k), (a, b) => holdingRoundRank(a) - holdingRoundRank(b));
+  const byCcy = group(h => h.company.currency);
+
+  // Ranked by this quarter's value movement. A realisation returns cash rather
+  // than destroying value, so proceeds are added back before comparing.
+  const movers = live.concat(hs.filter(h => h.nav === 0 && h.periodRealised > 0))
+    .filter(h => h.movePct != null)
+    .sort((a, b) => b.movePct - a.movePct);
+
+  const bands = [
+    { label: zh ? '低于 1.0x' : 'Below 1.0x', test: m => m != null && m < 1 },
+    { label: '1.0x – 1.25x', test: m => m != null && m >= 1 && m < 1.25 },
+    { label: '1.25x – 1.5x', test: m => m != null && m >= 1.25 && m < 1.5 },
+    { label: zh ? '1.5x 以上' : '1.5x and above', test: m => m != null && m >= 1.5 },
+  ].map(b => {
+    const set = live.filter(h => b.test(h.moc));
+    return { label: b.label, count: set.length, nav: set.reduce((s, h) => s + h.nav, 0) };
+  });
+
+  return `
+<div class="fund-strip" style="grid-template-columns:repeat(${kpi.length},1fr)">
+  ${kpi.map(([l, v], i) => '<div class="fss-item"><div class="fss-label">' + l + '</div><div class="fss-value"' +
+    (i === 4 ? ' style="color:' + (movePct >= 0 ? 'var(--up)' : 'var(--down)') + '"' : '') + '>' + v + '</div></div>').join('')}
+</div>
+<div class="kpi-asof">${zh ? '口径：同一公司若由多支基金持有，在此合并为一个项目；估值变动 =（期末 NAV ＋ 本季回收）− 期初 NAV，退出回收不计作减值。' : 'Basis: a company held by more than one fund is shown as a single position; value movement = (closing NAV + proceeds received this quarter) − opening NAV, so a realisation is not read as a write-down.'}</div>
+
+${largestPct > CONC_LIMIT ? '<div class="alert-line"><b>' + (zh ? '集中度提示' : 'Concentration') + '</b>' +
+  (zh ? largest.company.projectName + ' 占组合 NAV ' + largestPct.toFixed(1) + '%，超过 ' + CONC_LIMIT + '% 的单项目参考上限。'
+      : largest.company.projectName + ' is ' + largestPct.toFixed(1) + '% of portfolio NAV, above the ' + CONC_LIMIT + '% single-position guideline.') + '</div>' : ''}
+
+<div class="grid-3 chart-grid">
+  <div class="chart-block">
+    <div class="chart-title">${zh ? '赛道暴露' : 'Exposure by theme'}</div>
+    <div class="chart-note">${zh ? '按 NAV 口径' : 'By NAV'}</div>
+    ${renderBreakdown(bySector, navTotal)}
+  </div>
+  <div class="chart-block">
+    <div class="chart-title">${zh ? '进入轮次分布' : 'Exposure by entry round'}</div>
+    <div class="chart-note">${zh ? '按 NAV 口径' : 'By NAV'}</div>
+    ${renderBreakdown(byRound, navTotal)}
+  </div>
+  <div class="chart-block">
+    <div class="chart-title">${zh ? '记账币种' : 'Exposure by currency'}</div>
+    <div class="chart-note">${zh ? '按 NAV 口径' : 'By NAV'}</div>
+    ${renderBreakdown(byCcy, navTotal)}
+  </div>
+</div>
+
+<div class="grid-2 chart-grid">
+  <div class="chart-block">
+    <div class="chart-title">${zh ? '集中度 · 前五大持仓' : 'Concentration · top five positions'}</div>
+    <div class="chart-note">${zh ? '前五大合计占 NAV ' + top5Pct.toFixed(1) + '%，单项目参考上限 ' + CONC_LIMIT + '%' : 'Top five are ' + top5Pct.toFixed(1) + '% of NAV; single-position guideline is ' + CONC_LIMIT + '%'}</div>
+    <div class="bd-list">
+      ${live.slice(0, 5).map(h => {
+        const pct = navTotal > 0 ? h.nav / navTotal * 100 : 0;
+        return '<div class="bd-row">' +
+          '<div class="bd-name"><a href="javascript:navigate(\'/company/' + h.companyId + '\')">' + h.company.projectName + '</a></div>' +
+          '<div class="bd-track"><span style="width:' + pct.toFixed(1) + '%' + (pct > CONC_LIMIT ? ';background:var(--up)' : '') + '"></span></div>' +
+          '<div class="bd-val">' + fmtMoney(h.nav) + '</div>' +
+          '<div class="bd-pct"' + (pct > CONC_LIMIT ? ' style="color:var(--up);font-weight:600"' : '') + '>' + pct.toFixed(1) + '%</div>' +
+          '</div>';
+      }).join('')}
+    </div>
+  </div>
+  <div class="chart-block">
+    <div class="chart-title">${zh ? '回报倍数分档' : 'Holdings by gross multiple'}</div>
+    <div class="chart-note">${zh ? '在管项目，按累计投入的回报倍数分组' : 'Live positions grouped by return on invested cost'}</div>
+    <div class="table-wrap"><table class="data-table">
+      <thead><tr><th>${zh ? '倍数区间' : 'Band'}</th><th style="text-align:right">${zh ? '项目数' : 'Positions'}</th><th style="text-align:right">${t('fund_nav')}</th><th style="text-align:right">${zh ? '占 NAV' : '% of NAV'}</th></tr></thead>
+      <tbody>
+        ${bands.map(b => '<tr><td>' + b.label + '</td><td class="text-right">' + b.count + '</td><td class="text-right">' + fmtMoney(b.nav) +
+          '</td><td class="text-right">' + (navTotal > 0 ? (b.nav / navTotal * 100).toFixed(1) : '0.0') + '%</td></tr>').join('')}
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<h4 class="subsection-title" style="margin-top:var(--space-6)">${zh ? '本季估值变动' : 'Value movement this quarter'}</h4>
+<div class="table-wrap"><table class="data-table">
+  <thead><tr>
+    <th>${zh ? '项目' : 'Company'}</th>
+    <th>${zh ? '持有基金' : 'Held by'}</th>
+    <th style="text-align:right">${zh ? '期初 NAV' : 'Opening NAV'}</th>
+    <th style="text-align:right">${zh ? '本季回收' : 'Proceeds'}</th>
+    <th style="text-align:right">${zh ? '期末 NAV' : 'Closing NAV'}</th>
+    <th style="text-align:right">${zh ? '变动额' : 'Movement'}</th>
+    <th style="text-align:right">${zh ? '变动幅度' : 'Change'}</th>
+    <th style="text-align:right">${zh ? '累计倍数' : 'Gross MoC'}</th>
+  </tr></thead>
+  <tbody>
+    ${movers.map(h => {
+      const up = h.moveAbs >= 0;
+      const cls = up ? 'text-danger' : 'text-success';
+      return '<tr>' +
+        '<td><a href="javascript:navigate(\'/company/' + h.companyId + '\')">' + h.company.projectName + '</a></td>' +
+        '<td class="text-muted">' + h.funds.join(' · ') + '</td>' +
+        '<td class="text-right">' + fmtMoney(h.priorNav) + '</td>' +
+        '<td class="text-right">' + (h.periodRealised > 0 ? fmtMoney(h.periodRealised) : '<span class="text-muted">' + NA + '</span>') + '</td>' +
+        '<td class="text-right">' + fmtMoney(h.nav) + '</td>' +
+        '<td class="text-right ' + cls + '">' + (up ? '+' : '−') + fmtMoney(Math.abs(h.moveAbs)) + '</td>' +
+        '<td class="text-right ' + cls + '">' + (up ? '+' : '') + (h.movePct * 100).toFixed(2) + '%</td>' +
+        '<td class="text-right">' + fmtRatio(h.moc) + '</td>' +
+        '</tr>';
+    }).join('')}
+    <tr class="is-total">
+      <td>${zh ? '合计' : 'Total'}</td><td></td>
+      <td class="text-right">${fmtMoney(priorTotal)}</td>
+      <td class="text-right">${fmtMoney(periodRealisedTotal)}</td>
+      <td class="text-right">${fmtMoney(navTotal)}</td>
+      <td class="text-right ${moveAbs >= 0 ? 'text-danger' : 'text-success'}">${moveAbs >= 0 ? '+' : '−'}${fmtMoney(Math.abs(moveAbs))}</td>
+      <td class="text-right ${moveAbs >= 0 ? 'text-danger' : 'text-success'}">${movePct >= 0 ? '+' : ''}${movePct.toFixed(2)}%</td>
+      <td class="text-right">${fmtRatio(investedTotal > 0 ? (navTotal + realisedTotal) / investedTotal : null)}</td>
+    </tr>
+  </tbody>
+</table></div>
+<div class="kpi-asof">${zh ? '期初为 25Q4 账面值，期末为 26Q1。红涨绿跌。合计行的期初 / 期末与基金季度表逐笔对得上。' : 'Opening is the 25Q4 book value, closing is 26Q1. The total row ties back to the fund quarterly table.'}</div>`;
 }
 
 // ========== Roadmap / planned placeholders ==========
